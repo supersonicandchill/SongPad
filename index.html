@@ -1,417 +1,462 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
-<title>Away Game — Christian Parent’s Playbook</title>
-<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<title>🎸 SongPad</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #f8f9fa; font-family: 'DM Sans', system-ui, sans-serif; color: #1a1a1a; line-height: 1.6; }
-button { cursor: pointer; }
-.progress-bar { height: 10px; background: #e9ecef; border-radius: 9999px; overflow: hidden; }
-.progress-fill { height: 100%; transition: width 0.5s ease; }
-.team-card { background: #fff; border: 1px solid #dee2e6; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
-.delete-btn { background: #fee2e2; color: #ef4444; border: none; width: 32px; height: 32px; border-radius: 8px; font-size: 18px; }
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0b12;
+  --surface:#14141f;
+  --card:#1c1c2e;
+  --card2:#201e35;
+  --border:#2a2a42;
+  --gold:#F0B429;
+  --gold2:#f7c93d;
+  --orange:#E8763A;
+  --teal:#2C8C7C;
+  --teal2:#37a896;
+  --text:#ede9e0;
+  --muted:#666;
+  --muted2:#888;
+  --danger:#c0392b;
+  --purple:#7c5cbf;
+}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* noise overlay */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");opacity:.5;pointer-events:none;z-index:0}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#0f0f1e 0%,#181828 100%);border-bottom:2px solid var(--gold);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 30px rgba(0,0,0,.5)}
+.logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.9rem;letter-spacing:2px;color:var(--gold);text-shadow:0 0 30px rgba(240,180,41,.5),0 0 60px rgba(240,180,41,.2);line-height:1}
+.logo span{color:var(--orange)}
+.logo sub{font-size:.55rem;color:var(--muted2);letter-spacing:1px;font-weight:600;vertical-align:middle;margin-left:4px}
+.hbtns{display:flex;gap:7px;align-items:center}
+
+/* BUTTONS */
+.btn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.92rem;letter-spacing:.5px;border:none;border-radius:8px;padding:8px 13px;cursor:pointer;transition:all .15s;line-height:1}
+.btn-gold{background:var(--gold);color:#111}.btn-gold:hover{background:var(--gold2);transform:translateY(-1px)}
+.btn-ol{background:transparent;color:var(--gold);border:1.5px solid rgba(240,180,41,.5)}.btn-ol:hover{background:rgba(240,180,41,.08);border-color:var(--gold)}
+.btn-teal{background:var(--teal);color:#fff}.btn-teal:hover{background:var(--teal2)}
+.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{background:#e74c3c}
+.btn-ghost{background:transparent;color:var(--muted2);border:1.5px solid var(--border)}.btn-ghost:hover{color:var(--text);border-color:var(--muted)}
+.btn-sm{padding:7px 10px;font-size:.82rem}
+.btn-xs{padding:5px 9px;font-size:.78rem}
+
+/* RANDOM BANNER */
+.rand-wrap{padding:10px 12px 0}
+.rand-banner{background:linear-gradient(100deg,#13102a,#1a1635);border:1.5px solid var(--orange);border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:11px;animation:slideIn .25s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.rand-icon{font-size:1.8rem;flex-shrink:0}
+.rand-body{flex:1;min-width:0}
+.rand-lbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;color:var(--orange);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.rand-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rand-hook{font-size:.83rem;color:var(--gold);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rand-acts{display:flex;gap:6px;flex-shrink:0}
+
+/* SEARCH / FILTER */
+.search-bar{padding:10px 12px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:8px;position:sticky;top:60px;z-index:90}
+.search-wrap{flex:1;min-width:160px;position:relative}
+.search-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:.9rem;pointer-events:none}
+.search-input{width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:8px 11px 8px 30px;color:var(--text);font-family:'Barlow',sans-serif;font-size:.92rem;outline:none;transition:border-color .15s}
+.search-input:focus{border-color:var(--gold)}
+.search-input::placeholder{color:var(--muted)}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.77rem;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);cursor:pointer;transition:all .15s;color:var(--muted);background:transparent;white-space:nowrap}
+.chip.on{background:var(--gold);color:#111;border-color:var(--gold)}
+.chip:hover:not(.on){border-color:rgba(240,180,41,.5);color:var(--gold2)}
+
+/* COUNT */
+.count-bar{padding:7px 16px 2px;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.count-num{color:var(--gold);font-weight:700}
+
+/* GRID */
+.grid{padding:10px 12px 6px;display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:11px;position:relative;z-index:1}
+@media(max-width:450px){.grid{grid-template-columns:1fr;padding:8px}}
+
+/* CARD */
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;position:relative}
+.card:hover{transform:translateY(-3px);border-color:rgba(240,180,41,.4);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.card.fav{border-color:rgba(240,180,41,.6)}
+.card.fav::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(240,180,41,.04),transparent);pointer-events:none}
+.caccent{height:4px;width:100%;flex-shrink:0}
+.cbody{padding:12px 13px 11px}
+.ctop{display:flex;align-items:flex-start;justify-content:space-between;gap:7px;margin-bottom:5px}
+.ctitle{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;line-height:1.25;color:var(--text)}
+.ctitle.empty{color:var(--muted)}
+.starbtn{background:none;border:none;font-size:1.15rem;cursor:pointer;padding:2px;flex-shrink:0;opacity:.28;transition:opacity .15s,transform .15s;line-height:1}
+.starbtn:hover{opacity:.7;transform:scale(1.15)}
+.starbtn.on{opacity:1}
+.chook{font-size:.86rem;color:var(--gold);font-style:italic;margin-bottom:7px;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.cmeta{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px}
+.tag{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.74rem;padding:2px 8px;border-radius:20px}
+.t-mood{background:rgba(44,140,124,.2);color:#5bd5c2;border:1px solid rgba(44,140,124,.3)}
+.t-genre{background:rgba(232,118,58,.16);color:#f0935a;border:1px solid rgba(232,118,58,.28)}
+.t-key{background:rgba(240,180,41,.12);color:var(--gold);border:1px solid rgba(240,180,41,.25)}
+.cnotes{font-size:.8rem;color:var(--muted2);line-height:1.45;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.cdate{font-size:.69rem;color:#3e3e5a;margin-top:8px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.3px}
+
+/* EMPTY */
+.empty{text-align:center;padding:70px 24px 40px;color:var(--muted);position:relative;z-index:1}
+.empty-icon{font-size:3.8rem;margin-bottom:14px;filter:grayscale(.5)}
+.empty-ttl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.35rem;color:var(--muted2);margin-bottom:7px}
+.empty-sub{font-size:.87rem;line-height:1.5}
+
+/* OVERLAY / MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+@media(min-width:560px){.overlay{align-items:center}}
+.modal{background:var(--surface);border-radius:18px 18px 0 0;width:100%;max-width:530px;max-height:94vh;overflow-y:auto;padding:18px 16px 24px;border:1.5px solid var(--border);border-bottom:none;animation:slideUp .22s ease}
+@media(min-width:560px){.modal{border-radius:16px;border-bottom:1.5px solid var(--border);animation:fadeIn .18s ease}}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fadeIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.mhandle{width:42px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+@media(min-width:560px){.mhandle{display:none}}
+.mtr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.mttl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.22rem;color:var(--gold)}
+.mlbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.6px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.minput,.mtarea,.mselect{width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-family:'Barlow',sans-serif;font-size:.92rem;outline:none;margin-bottom:12px;transition:border-color .15s}
+.minput:focus,.mtarea:focus,.mselect:focus{border-color:var(--gold);background:var(--card2)}
+.minput::placeholder,.mtarea::placeholder{color:var(--muted)}
+.mtarea{min-height:90px;resize:vertical;line-height:1.5}
+.mselect option{background:var(--card);color:var(--text)}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+@media(max-width:380px){.mrow{grid-template-columns:1fr}}
+.mactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;align-items:center}
+.mactions-right{margin-left:auto}
+.fav-toggle{display:flex;align-items:center;gap:9px;cursor:pointer;margin-bottom:13px;padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);transition:border-color .15s}
+.fav-toggle:hover{border-color:var(--gold)}
+.fav-toggle.on{border-color:rgba(240,180,41,.4);background:rgba(240,180,41,.06)}
+.fav-star{font-size:1.3rem;transition:opacity .15s}
+.fav-lbl{font-size:.85rem;color:var(--muted2)}
+
+/* IO MODAL */
+.io-ta{width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:10px 11px;color:var(--text);font-family:'Courier New',monospace;font-size:.75rem;min-height:110px;resize:vertical;outline:none;margin:8px 0;line-height:1.5}
+.io-ta:focus{border-color:var(--gold)}
+.io-msg{font-size:.81rem;margin-top:8px;padding:7px 10px;border-radius:6px}
+.io-msg.ok{background:rgba(44,140,124,.15);color:var(--teal2);border:1px solid rgba(44,140,124,.25)}
+.io-msg.err{background:rgba(192,57,43,.15);color:#e74c3c;border:1px solid rgba(192,57,43,.25)}
+
+/* DISCLAIMER */
+.disclaimer{text-align:center;font-size:.73rem;color:#2e2e48;padding:16px 14px 28px;line-height:1.7;border-top:1px solid #131320;margin-top:16px;position:relative;z-index:1}
+.disclaimer strong{color:#444}
+.disclaimer .disc-icon{font-size:1.1rem;display:block;margin-bottom:4px}
 </style>
 </head>
 <body>
 <div id="root"></div>
-<script type="text/babel" data-presets="react">
-const { useState } = React;
+<script type="text/babel">
+const {useState, useEffect, useCallback} = React;
 
-// ─── STORAGE ──────────────────────────────────────────────────────────────────
-function load(key, fb) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fb; } catch { return fb; } }
-function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
-let _c = Date.now();
-function uid() { return "x" + (++_c).toString(36); }
+const MOODS = ['Hype','Chill','Dark','Hopeful','Romantic','Melancholy','Angry','Playful','Spiritual','Nostalgic'];
+const GENRES = ['Pop','Hip-Hop','R&B','Rock','Country','Gospel','Folk','EDM','Trap','Jazz','Soul','Indie','Alt','Other'];
+const ACCENTS = ['#E8763A','#F0B429','#2C8C7C','#7c5cbf','#c0392b','#2980b9','#27ae60','#e91e8c','#16a085','#d35400'];
 
-// ─── COLORS ───────────────────────────────────────────────────────────────────
-const C = {
-  bg0: "#f8f9fa", bg1: "#ffffff", bg2: "#f1f3f5", bg3: "#e9ecef",
-  border: "#dee2e6", borderHi: "#ff8c00",
-  text: "#1a1a1a", textSub: "#495057", textMuted: "#6c757d",
-  orange: "#ff8c00", green: "#00b36b"
-};
-
-// ─── VIRTUES (Complete) ───────────────────────────────────────────────────────
-const VIRTUES = {
-  L: { key:"L", label:"Love", icon:"❤️", tagline:"Others-first in a me-first culture", color:"#ff4d4d", bg:"#fff0f0", border:"#ff8c00",
-       scoreMeaning: "0=Never • 1=Rarely • 2=Sometimes • 3=Consistently puts others first",
-       strong: ["Celebrates teammates' success", "Shows genuine kindness", "Puts team above self"],
-       weak:   ["Selfish on and off the field", "Dismisses or ignores teammates", "Only cheers for own highlights"],
-       develop: ["After each game, name one teammate who helped you win", "Do one act of encouragement before you leave the field", "Pray: 'Lord, help me love my teammates the way You love me'"] },
-  P: { key:"P", label:"Peace", icon:"☮️", tagline:"Calm anchored in Christ", color:"#00b36b", bg:"#f0fff4", border:"#ff8c00",
-       scoreMeaning: "0=Constant anxiety • 1=Occasional calm • 2=Usually calm • 3=Peace that guards the heart",
-       strong: ["Stays composed under pressure", "Calms teammates in tense moments", "Bounces back quickly from mistakes"],
-       weak:   ["Anxious or panicked when things go wrong", "Spreads tension to teammates", "Dwells on errors during play"],
-       develop: ["Practice three slow breaths before any big moment", "Write down one worry this week and give it to God in prayer", "Memorize Phil. 4:7 — let it anchor your pregame routine"] },
-  S: { key:"S", label:"Self-Control", icon:"🛡️", tagline:"Responding instead of reacting", color:"#0077cc", bg:"#f0f8ff", border:"#ff8c00",
-       scoreMeaning: "0=Frequent outbursts • 1=Improving • 2=Usually controlled • 3=Strong self-discipline",
-       strong: ["Responds to bad calls without blowing up", "Keeps emotions in check under provocation", "Leads by example in discipline"],
-       weak:   ["Frequent outbursts or meltdowns", "Argues with officials or coaches", "Lets frustration hurt performance"],
-       develop: ["Identify your #1 trigger — name it, then make a plan for it", "After a bad call, count to 5 before you react", "Ask a trusted teammate to hold you accountable this week"] },
-  G: { key:"G", label:"Gentleness", icon:"🌿", tagline:"Strength under control", color:"#9c4dff", bg:"#f8f0ff", border:"#ff8c00",
-       scoreMeaning: "0=Often harsh • 1=Sometimes gentle • 2=Usually gentle • 3=Strength under control",
-       strong: ["Encourages struggling teammates", "Competes hard without being cruel", "Uses words that build up, not tear down"],
-       weak:   ["Often harsh or cutting with words", "Intimidates or belittles others", "Confuses meanness with toughness"],
-       develop: ["Before criticizing a teammate, ask: 'Is this kind AND true?'", "Find one struggling player this week and intentionally encourage them", "Journal: where did strength AND gentleness show up together today?"] },
-  H: { key:"H", label:"Humility", icon:"🙏", tagline:"Playing from identity, not for identity", color:"#ff8c00", bg:"#fff8f0", border:"#ff8c00",
-       scoreMeaning: "0=Very prideful • 1=Occasional humility • 2=Growing humility • 3=Consistently humble",
-       strong: ["Credits teammates and coaches for success", "Accepts coaching without defensiveness", "Secure enough to celebrate others"],
-       weak:   ["Takes credit, deflects blame", "Gets defensive when corrected", "Needs to be the star"],
-       develop: ["After your next win, publicly credit two specific teammates", "When corrected by a coach, respond: 'Thank you, I'll work on that'", "Ask yourself: 'Am I playing TO prove something or FROM knowing who I am?'"] },
-  Gr: { key:"Gr", label:"Gratitude", icon:"🙌", tagline:"Thankful in all circumstances", color:"#ffaa00", bg:"#fffdf0", border:"#ff8c00",
-       scoreMeaning: "0=Very entitled • 1=Occasional thanks • 2=Usually grateful • 3=Thankful in all circumstances",
-       strong: ["Thanks coaches, officials, and opponents", "Grateful for the opportunity to compete", "Positive attitude win or lose"],
-       weak:   ["Entitled attitude about playing time or roles", "Rarely thanks others", "Complains about conditions, calls, or teammates"],
-       develop: ["Start every practice with one thing you're grateful for about this team", "Write a one-line thank-you to a coach or teammate this week", "After a loss, find three genuine things to be thankful for before you leave"] },
-  J: { key:"J", label:"Joy", icon:"🎉", tagline:"Delight that outlasts the score", color:"#ff6600", bg:"#fff4f0", border:"#ff8c00",
-       scoreMeaning: "0=Joy is gone • 1=Rare joy • 2=Usually joyful • 3=Consistent delight",
-       strong: ["Genuine enjoyment of the game", "Joy that doesn't depend on the scoreboard", "Lifts the energy of those around them"],
-       weak:   ["Only happy when winning", "Drains team energy with negativity", "Has lost the love of the game"],
-       develop: ["Recall why you first fell in love with this sport — write it down", "Find one moment in each practice to just enjoy the game", "Remind yourself: the scoreboard is temporary, but who you're becoming is not"] }
-};
-
-const SCORE_LABELS = ["Missing", "Emerging", "Developing", "Strong"];
-
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-function getCombo(scores) {
-  const strong = Object.values(scores).filter(v => v === 3).length;
-  const developing = Object.values(scores).filter(v => v >= 2).length;
-  const avg = (Object.values(scores).reduce((a,b) => a + b, 0) / 7).toFixed(1);
-
-  if (strong >= 5) return { label: "Kingdom Competitor", icon: "🏆", desc: `Avg ${avg}/3`, color: C.orange, progress: 95 };
-  if (developing >= 6) return { label: "Strong Disciple", icon: "🌟", desc: `Avg ${avg}/3`, color: C.green, progress: 85 };
-  return { label: "Developing Disciple", icon: "🌱", desc: `Avg ${avg}/3`, color: "#fd7e14", progress: Math.round(developing / 7 * 100) };
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function fmtDate(ts) { return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'}); }
+function accentFor(id) {
+  let n = 0;
+  for (let i = 0; i < id.length; i++) n = (n * 31 + id.charCodeAt(i)) & 0xffff;
+  return ACCENTS[n % ACCENTS.length];
 }
+const blankIdea = () => ({id:uid(),title:'',hook:'',mood:'',key:'',genre:'',notes:'',fav:false,ts:Date.now()});
 
-function calculateTeamProgress(athletes) {
-  if (athletes.length === 0) return { avgScore: "0.0", strongPercent: 0, totalAthletes: 0 };
-  let totalScore = 0, totalStrong = 0;
-  const totalVirtues = athletes.length * 7;
-
-  athletes.forEach(a => {
-    const scores = Object.values(a.scores || {});
-    totalScore += scores.reduce((a,b) => a + b, 0);
-    totalStrong += scores.filter(v => v === 3).length;
-  });
-
-  const avgScore = (totalScore / totalVirtues).toFixed(1);
-  const strongPercent = Math.round((totalStrong / totalVirtues) * 100);
-
-  return { avgScore, strongPercent, totalAthletes: athletes.length };
-}
-
-// ─── MODALS ───────────────────────────────────────────────────────────────────
-function Modal({title, onClose, children}) {
-  return (
-    <div style={{position:"fixed", inset:0, background:"rgba(0,0,0,0.75)", zIndex:500, display:"flex", alignItems:"center", justifyContent:"center"}} onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div style={{background:"#fff", borderRadius:16, width:"92%", maxWidth:720, maxHeight:"92vh", overflow:"hidden", boxShadow:"0 25px 70px rgba(0,0,0,0.25)"}}>
-        <div style={{padding:"18px 24px", borderBottom:"1px solid #dee2e6", display:"flex", justifyContent:"space-between", alignItems:"center"}}>
-          <span style={{fontSize:21, fontWeight:800, color:C.orange}}>{title}</span>
-          <button onClick={onClose} style={{fontSize:24, background:"none", border:"none", color:"#666"}}>✕</button>
-        </div>
-        <div style={{padding:24, overflowY:"auto", maxHeight:"78vh"}}>{children}</div>
-      </div>
-    </div>
-  );
-}
-
-function ConfirmDelete({name, onConfirm, onCancel}) {
-  return (
-    <Modal title="Delete Athlete" onClose={onCancel}>
-      <p style={{fontSize:16, marginBottom:24}}>Are you sure you want to permanently delete <strong>{name}</strong>?</p>
-      <p style={{color:"#ef4444", marginBottom:24}}>This cannot be undone.</p>
-      <div style={{display:"flex", gap:12, justifyContent:"flex-end"}}>
-        <button onClick={onCancel} style={{padding:"12px 24px", border:"none", background:"#ddd", borderRadius:10}}>Cancel</button>
-        <button onClick={onConfirm} style={{padding:"12px 28px", border:"none", background:"#ef4444", color:"#fff", borderRadius:10, fontWeight:700}}>Yes, Delete</button>
-      </div>
-    </Modal>
-  );
-}
-
-// ─── EDIT MODAL ───────────────────────────────────────────────────────────────
-function EditModal({person, onSave, onClose}) {
-  const [data, setData] = useState({...person, notes: person.notes || ""});
-
-  const updateScore = (key, value) => setData(prev => ({...prev, scores: {...prev.scores, [key]: Number(value)}}));
-
-  return (
-    <Modal title={data.id ? "Edit Athlete" : "Add New Athlete"} onClose={onClose}>
-      <input placeholder="Athlete Name *" value={data.name||""} onChange={e=>setData({...data,name:e.target.value})} style={{width:"100%", padding:14, fontSize:17, border:`2px solid ${C.border}`, borderRadius:10, marginBottom:12}} />
-      <input placeholder="Role / Team (optional)" value={data.role||""} onChange={e=>setData({...data,role:e.target.value})} style={{width:"100%", padding:14, fontSize:17, border:`2px solid ${C.border}`, borderRadius:10, marginBottom:20}} />
-
-      <div style={{marginBottom:20}}>
-        <div style={{fontWeight:700, color:C.orange, marginBottom:12}}>Score Each Virtue (0–3)</div>
-        {Object.values(VIRTUES).map(t => (
-          <div key={t.key} style={{marginBottom:16, padding:16, background:"#fff", border:`1px solid ${t.border}`, borderRadius:12}}>
-            <div style={{display:"flex", alignItems:"center", gap:12, marginBottom:8}}>
-              <span style={{fontSize:28}}>{t.icon}</span>
-              <div style={{flex:1, fontWeight:700, color:t.color}}>{t.label}</div>
-            </div>
-            <div style={{fontSize:13, color:"#555", marginBottom:10}}>{t.scoreMeaning}</div>
-            <div style={{display:"flex", gap:6}}>
-              {[0,1,2,3].map(n => (
-                <button key={n} onClick={()=>updateScore(t.key,n)} style={{flex:1, padding:"10px", borderRadius:8, background: data.scores[t.key]===n ? C.orange : "#f1f3f5", color: data.scores[t.key]===n ? "#fff" : "#333", fontWeight:700}}>
-                  {n}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{marginBottom:20}}>
-        <div style={{fontWeight:700, marginBottom:8}}>Notes / Observations / Prayers</div>
-        <textarea value={data.notes} onChange={e=>setData({...data, notes:e.target.value})} placeholder="Key moments, growth areas, specific prayers..." style={{width:"100%", height:130, padding:14, border:`2px solid ${C.border}`, borderRadius:10, resize:"vertical"}} />
-      </div>
-
-      <div style={{display:"flex", gap:12, justifyContent:"flex-end"}}>
-        <button onClick={onClose} style={{padding:"12px 24px", border:"none", background:"#ddd", borderRadius:10}}>Cancel</button>
-        <button onClick={()=>onSave(data)} style={{padding:"12px 32px", border:"none", background:C.orange, color:"#fff", borderRadius:10, fontWeight:700}} disabled={!data.name?.trim()}>💾 Save Changes</button>
-      </div>
-    </Modal>
-  );
-}
-
-// ─── PERSON DETAIL ────────────────────────────────────────────────────────────
-function PersonDetail({person, onClose, onEdit}) {
-  const [tab, setTab] = useState("assess");
-  const combo = getCombo(person.scores);
-
-  return (
-    <Modal title={person.name} onClose={onClose}>
-      <div style={{display:"flex", justifyContent:"space-between", marginBottom:20}}>
-        <div>
-          <div style={{fontSize:52}}>{combo.icon}</div>
-          <div style={{fontSize:24, fontWeight:800, color:combo.color}}>{combo.label}</div>
-        </div>
-        <button onClick={()=>{ onEdit(person); onClose(); }} style={{background:C.orange, color:"#fff", border:"none", padding:"10px 22px", borderRadius:10, fontWeight:700}}>✏ Edit</button>
-      </div>
-
-      <div style={{marginBottom:24}}>
-        <div style={{display:"flex", justifyContent:"space-between", fontSize:14, marginBottom:8}}>
-          <span>Character Progress</span>
-          <span>{combo.progress}%</span>
-        </div>
-        <div className="progress-bar">
-          <div className="progress-fill" style={{width: `${combo.progress}%`, background: combo.progress > 80 ? "linear-gradient(90deg,#00b36b,#34d399)" : combo.progress > 50 ? "linear-gradient(90deg,#ff8c00,#ffaa00)" : "#dc3545"}} />
-        </div>
-        <div style={{fontSize:13, color:C.textMuted, marginTop:6}}>
-          Last updated: {person.lastUpdated ? new Date(person.lastUpdated).toLocaleDateString() : "Never"}
-        </div>
-      </div>
-
-      <div style={{display:"flex", borderBottom:"3px solid #ff8c00", marginBottom:20}}>
-        {["assess","develop","notes"].map(t => (
-          <button key={t} onClick={()=>setTab(t)} style={{flex:1, padding:"14px", fontWeight:700, background:tab===t?C.orange:"#f1f3f5", color:tab===t?"#fff":"#333", border:"none"}}>
-            {t==="assess"?"📊 Profile":t==="develop"?"🛠 Develop":"📝 Notes"}
-          </button>
-        ))}
-      </div>
-
-      {tab==="assess" && Object.entries(person.scores).map(([k,v]) => {
-        const t = VIRTUES[k];
-        const showHas = v >= 2;
-        return (
-          <div key={k} style={{marginBottom:20, background:"#fff", border:`2px solid ${t.border}`, borderRadius:14, overflow:"hidden"}}>
-            <div style={{background:t.bg, padding:"16px 20px", display:"flex", alignItems:"center", gap:16}}>
-              <span style={{fontSize:42}}>{t.icon}</span>
-              <div style={{flex:1}}><div style={{fontSize:21, fontWeight:800, color:t.color}}>{t.label}</div></div>
-              <span style={{fontSize:18, fontWeight:700}}>{v}/3</span>
-            </div>
-            <div style={{padding:"20px"}}>
-              {(showHas ? t.strong : t.weak).map((s,i) => (
-                <div key={i} style={{marginBottom:6}}>{showHas?"→":"–"} {s}</div>
-              ))}
-            </div>
-          </div>
-        );
-      })}
-
-      {tab==="develop" && (
-        <div>
-          {Object.entries(person.scores).map(([k,v]) => {
-            const t = VIRTUES[k];
-            return (
-              <div key={k} style={{marginBottom:20, background:"#fff", border:`2px solid ${t.border}`, borderRadius:14, overflow:"hidden"}}>
-                <div style={{background:t.bg, padding:"14px 20px", display:"flex", alignItems:"center", gap:12}}>
-                  <span style={{fontSize:28}}>{t.icon}</span>
-                  <div style={{fontSize:18, fontWeight:800, color:t.color, flex:1}}>{t.label}</div>
-                  <span style={{fontSize:14, color:C.textMuted, background:"#fff", padding:"4px 10px", borderRadius:20, fontWeight:700}}>{SCORE_LABELS[v]}</span>
-                </div>
-                <div style={{padding:"16px 20px"}}>
-                  {t.develop.map((step,i) => (
-                    <div key={i} style={{display:"flex", gap:12, marginBottom:10, alignItems:"flex-start"}}>
-                      <span style={{background:C.orange, color:"#fff", borderRadius:"50%", width:22, height:22, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:800, flexShrink:0}}>{i+1}</span>
-                      <span style={{fontSize:14, color:C.text, lineHeight:1.5}}>{step}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {tab==="notes" && (
-        <div style={{background:"#fff", border:`1px solid ${C.border}`, borderRadius:12, padding:24, minHeight:200, whiteSpace:"pre-wrap", fontSize:15}}>
-          {person.notes || "No notes added yet."}
-        </div>
-      )}
-    </Modal>
-  );
-}
-
-const BLANK_ATHLETE = { id:"", name:"", role:"", notes:"", scores:{L:1,P:1,S:1,G:1,H:1,Gr:1,J:1}, lastUpdated: null };
-
-// ─── MAIN APP ─────────────────────────────────────────────────────────────────
 function App() {
-  const [tab, setTab] = useState("athletes");
-  const [athletes, setAthletes] = useState(() => load("awaygame_athletes_v1", []));
+  const [ideas, setIdeas] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('songpad') || '[]'); } catch { return []; }
+  });
+  const [search, setSearch] = useState('');
+  const [fMood, setFMood] = useState('');
+  const [fGenre, setFGenre] = useState('');
+  const [favOnly, setFavOnly] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [viewing, setViewing] = useState(null);
-  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [isNew, setIsNew] = useState(false);
+  const [random, setRandom] = useState(null);
+  const [showIO, setShowIO] = useState(false);
+  const [ioMode, setIOMode] = useState('export');
+  const [ioText, setIOText] = useState('');
+  const [ioMsg, setIOMsg] = useState(null);
 
-  function saveAthlete(p) {
-    const updated = {...p, id: p.id || uid(), lastUpdated: Date.now()};
-    const next = p.id ? athletes.map(x => x.id === p.id ? updated : x) : [...athletes, updated];
-    setAthletes(next);
-    save("awaygame_athletes_v1", next);
-    setEditing(null);
-  }
+  useEffect(() => { localStorage.setItem('songpad', JSON.stringify(ideas)); }, [ideas]);
 
-  function deleteAthlete(id) {
-    const next = athletes.filter(a => a.id !== id);
-    setAthletes(next);
-    save("awaygame_athletes_v1", next);
-    setDeleteConfirm(null);
-    if (viewing && viewing.id === id) setViewing(null);
-  }
+  const save = useCallback(card => {
+    setIdeas(prev => {
+      const exists = prev.find(i => i.id === card.id);
+      return exists ? prev.map(i => i.id === card.id ? card : i) : [card, ...prev];
+    });
+    setEditing(null); setIsNew(false);
+  }, []);
 
-  const teamStats = calculateTeamProgress(athletes);
+  const del = useCallback(id => {
+    setIdeas(prev => prev.filter(i => i.id !== id));
+    setEditing(null); setIsNew(false);
+  }, []);
+
+  const toggleFav = useCallback((e, id) => {
+    e.stopPropagation();
+    setIdeas(prev => prev.map(i => i.id === id ? {...i, fav: !i.fav} : i));
+  }, []);
+
+  const doRandom = () => {
+    if (!ideas.length) return;
+    const unfaved = ideas.filter(i => !i.fav);
+    const pool = unfaved.length ? unfaved : ideas;
+    setRandom(pool[Math.floor(Math.random() * pool.length)]);
+  };
+
+  const filtered = [...ideas]
+    .filter(i => {
+      if (favOnly && !i.fav) return false;
+      if (fMood && i.mood !== fMood) return false;
+      if (fGenre && i.genre !== fGenre) return false;
+      const q = search.toLowerCase().trim();
+      return !q || (i.title + i.hook + i.notes + i.mood + i.genre + i.key).toLowerCase().includes(q);
+    })
+    .sort((a, b) => b.ts - a.ts);
+
+  const openExport = () => {
+    setIOMode('export');
+    setIOText(JSON.stringify(ideas, null, 2));
+    setIOMsg(null); setShowIO(true);
+  };
+  const openImport = () => { setIOMode('import'); setIOText(''); setIOMsg(null); setShowIO(true); };
+
+  const doImport = () => {
+    try {
+      const arr = JSON.parse(ioText);
+      if (!Array.isArray(arr)) throw new Error();
+      const valid = arr.filter(n => n && n.id && typeof n.title !== 'undefined');
+      setIdeas(prev => {
+        const ids = new Set(prev.map(i => i.id));
+        return [...prev, ...valid.filter(n => !ids.has(n.id))];
+      });
+      setIOMsg({type:'ok', text:`✅ Imported ${valid.length} idea(s). Duplicates skipped.`});
+    } catch {
+      setIOMsg({type:'err', text:'❌ Invalid JSON — check your data and try again.'});
+    }
+  };
+
+  const hasFilter = fMood || fGenre || favOnly || search.trim();
 
   return (
-    <div style={{minHeight:"100vh", background:"#f8f9fa"}}>
-      {/* HEADER */}
-      <div style={{background:"#fff", borderBottom:"4px solid #ff8c00", padding:"0 24px", height:76, display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 3px 12px rgba(0,0,0,0.1)"}}>
-        <div>
-          <div style={{fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:32, letterSpacing:1.5, color:C.orange}}>AWAY GAME</div>
-          <div style={{fontSize:13, color:"#555"}}>Christian Parent’s Playbook</div>
+    <div>
+      <header className="header">
+        <div className="logo">🎸 Song<span>Pad</span><sub>ideas</sub></div>
+        <div className="hbtns">
+          <button className="btn btn-ol btn-sm" title="Resurface a forgotten idea" onClick={doRandom}>🎲</button>
+          <button className="btn btn-ol btn-sm" title="Import ideas" onClick={openImport}>⬆️</button>
+          <button className="btn btn-ol btn-sm" title="Export ideas" onClick={openExport}>⬇️</button>
+          <button className="btn btn-gold btn-sm" onClick={() => { setIsNew(true); setEditing(blankIdea()); }}>＋ New</button>
         </div>
-        <div style={{display:"flex", gap:8}}>
-          <button onClick={()=>setTab("athletes")} style={{padding:"10px 22px", borderRadius:10, background:tab==="athletes"?C.orange:"#fff", color:tab==="athletes"?"#fff":"#333", fontWeight:700, border:"2px solid #ff8c00"}}>👥 My Athletes</button>
-          <button onClick={()=>setTab("playbook")} style={{padding:"10px 22px", borderRadius:10, background:tab==="playbook"?C.orange:"#fff", color:tab==="playbook"?"#fff":"#333", fontWeight:700, border:"2px solid #ff8c00"}}>📖 The Playbook</button>
-        </div>
-      </div>
+      </header>
 
-      {tab === "athletes" && (
-        <div style={{padding:24}}>
-          {/* TEAM PROGRESS DASHBOARD */}
-          {athletes.length > 0 && (
-            <div className="team-card" style={{marginBottom:32}}>
-              <div style={{fontSize:20, fontWeight:800, marginBottom:16, color:C.orange}}>Team Progress Overview</div>
-              <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(180px, 1fr))", gap:20}}>
-                <div>
-                  <div style={{fontSize:13, color:C.textMuted}}>Team Average Score</div>
-                  <div style={{fontSize:32, fontWeight:800, color:C.orange}}>{teamStats.avgScore}</div>
-                  <div style={{fontSize:13}}>out of 3.0</div>
-                </div>
-                <div>
-                  <div style={{fontSize:13, color:C.textMuted}}>Strong Virtues</div>
-                  <div style={{fontSize:32, fontWeight:800, color: teamStats.strongPercent > 70 ? C.green : C.orange}}>{teamStats.strongPercent}%</div>
-                </div>
-                <div>
-                  <div style={{fontSize:13, color:C.textMuted}}>Athletes Tracked</div>
-                  <div style={{fontSize:32, fontWeight:800}}>{teamStats.totalAthletes}</div>
-                </div>
-              </div>
+      {random && (
+        <div className="rand-wrap">
+          <div className="rand-banner">
+            <div className="rand-icon">🎲</div>
+            <div className="rand-body">
+              <div className="rand-lbl">Forgotten Idea</div>
+              <div className="rand-title">{random.title || 'Untitled'}</div>
+              {random.hook && <div className="rand-hook">"{random.hook}"</div>}
             </div>
-          )}
-
-          <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:28}}>
-            <h1 style={{fontSize:28, fontWeight:800}}>My Athletes</h1>
-            <button onClick={()=>setEditing(BLANK_ATHLETE)} style={{background:C.orange, color:"#fff", border:"none", padding:"12px 28px", borderRadius:12, fontWeight:700}}>＋ Add Athlete</button>
+            <div className="rand-acts">
+              <button className="btn btn-ol btn-xs" onClick={() => { setEditing({...random}); setIsNew(false); setRandom(null); }}>Open</button>
+              <button className="btn btn-ghost btn-xs" onClick={() => setRandom(null)}>✕</button>
+            </div>
           </div>
-
-          {athletes.length === 0 ? (
-            <div style={{textAlign:"center", padding:"120px 20px", color:"#666"}}>
-              <div style={{fontSize:80}}>⚽️🏀🏈</div>
-              <div style={{fontSize:24, margin:"20px 0"}}>Start building your team’s character</div>
-              <button onClick={()=>setEditing(BLANK_ATHLETE)} style={{background:C.orange, color:"#fff", padding:"14px 36px", borderRadius:12, fontSize:17, fontWeight:700}}>Add Your First Athlete</button>
-            </div>
-          ) : (
-            <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(310px, 1fr))", gap:20}}>
-              {athletes.map(p => {
-                const combo = getCombo(p.scores);
-                return (
-                  <div key={p.id} style={{background:"#fff", border:`1px solid ${C.border}`, borderRadius:16, padding:22, boxShadow:"0 6px 20px rgba(0,0,0,0.07)", position:"relative"}}>
-                    <button 
-                      onClick={(e)=>{e.stopPropagation(); setDeleteConfirm(p);}} 
-                      className="delete-btn" 
-                      style={{position:"absolute", top:12, right:12}}
-                    >
-                      🗑
-                    </button>
-                    
-                    <div onClick={()=>setViewing(p)} style={{cursor:"pointer"}}>
-                      <div style={{fontSize:22, fontWeight:800, marginBottom:8}}>{p.name}</div>
-                      {p.role && <div style={{color:C.textSub, marginBottom:12}}>{p.role}</div>}
-                      
-                      <div style={{display:"flex", gap:8, flexWrap:"wrap", marginBottom:16}}>
-                        {Object.entries(p.scores).map(([k,v]) => (
-                          <div key={k} style={{background:VIRTUES[k].bg, padding:"6px 10px", borderRadius:8, fontSize:14}}>{VIRTUES[k].icon} {v}</div>
-                        ))}
-                      </div>
-
-                      <div style={{marginBottom:12}}>
-                        <div className="progress-bar">
-                          <div className="progress-fill" style={{width: `${combo.progress}%`, background: combo.progress > 80 ? "linear-gradient(90deg,#00b36b,#34d399)" : combo.progress > 50 ? "linear-gradient(90deg,#ff8c00,#ffaa00)" : "#dc3545"}} />
-                        </div>
-                      </div>
-
-                      <div style={{fontSize:13, color:C.textMuted}}>Last updated: {p.lastUpdated ? new Date(p.lastUpdated).toLocaleDateString() : "Never"}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </div>
       )}
 
-      {tab === "playbook" && (
-        <div style={{padding:24, maxWidth:820, margin:"0 auto"}}>
-          <h2 style={{color:C.orange, marginBottom:8}}>The Seven Virtues</h2>
-          <p style={{color:C.textSub, marginBottom:32}}>Fruit of the Spirit applied to youth sports.</p>
-          {Object.values(VIRTUES).map(t => (
-            <div key={t.key} style={{marginBottom:24, background:"#fff", border:`1px solid ${t.border}`, borderRadius:16, padding:24}}>
-              <div style={{display:"flex", alignItems:"center", gap:16}}>
-                <span style={{fontSize:48}}>{t.icon}</span>
-                <div>
-                  <div style={{fontSize:22, fontWeight:800, color:t.color}}>{t.label}</div>
-                  <div style={{color:C.textSub}}>"{t.tagline}"</div>
+      <div className="search-bar">
+        <div className="search-wrap">
+          <span className="search-ico">🔍</span>
+          <input className="search-input" placeholder="Search title, hook, notes…" value={search} onChange={e => setSearch(e.target.value)}/>
+        </div>
+        <div className="chips">
+          <span className={`chip${favOnly ? ' on' : ''}`} onClick={() => setFavOnly(f => !f)}>⭐ Favs</span>
+          {MOODS.map(m => (
+            <span key={m} className={`chip${fMood === m ? ' on' : ''}`} onClick={() => setFMood(f => f === m ? '' : m)}>{m}</span>
+          ))}
+        </div>
+        <div className="chips">
+          {GENRES.map(g => (
+            <span key={g} className={`chip${fGenre === g ? ' on' : ''}`} onClick={() => setFGenre(f => f === g ? '' : g)}>{g}</span>
+          ))}
+        </div>
+      </div>
+
+      <div className="count-bar">
+        <span className="count-num">{filtered.length}</span>
+        <span>idea{filtered.length !== 1 ? 's' : ''}{hasFilter ? ' · filtered' : ''}</span>
+        {hasFilter && (
+          <span style={{marginLeft:'auto',cursor:'pointer',color:'var(--orange)',fontSize:'.78rem',fontFamily:'Barlow Condensed',fontWeight:700}}
+            onClick={() => { setSearch(''); setFMood(''); setFGenre(''); setFavOnly(false); }}>
+            Clear ✕
+          </span>
+        )}
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="empty">
+          <div className="empty-icon">{ideas.length === 0 ? '🎵' : '🔍'}</div>
+          <div className="empty-ttl">{ideas.length === 0 ? 'No ideas yet' : 'Nothing matches'}</div>
+          <div className="empty-sub">
+            {ideas.length === 0
+              ? <>Tap <strong style={{color:'var(--gold)'}}>＋ New</strong> to capture your first spark.</>
+              : 'Try clearing the filter or adjusting your search.'}
+          </div>
+        </div>
+      ) : (
+        <div className="grid">
+          {filtered.map(idea => (
+            <div key={idea.id} className={`card${idea.fav ? ' fav' : ''}`} onClick={() => { setEditing({...idea}); setIsNew(false); }}>
+              <div className="caccent" style={{background: accentFor(idea.id)}}/>
+              <div className="cbody">
+                <div className="ctop">
+                  <div className={`ctitle${!idea.title ? ' empty' : ''}`}>{idea.title || 'Untitled'}</div>
+                  <button className={`starbtn${idea.fav ? ' on' : ''}`} onClick={e => toggleFav(e, idea.id)} title={idea.fav ? 'Unfavorite' : 'Favorite'}>⭐</button>
                 </div>
+                {idea.hook && <div className="chook">"{idea.hook}"</div>}
+                <div className="cmeta">
+                  {idea.mood && <span className="tag t-mood">{idea.mood}</span>}
+                  {idea.genre && <span className="tag t-genre">{idea.genre}</span>}
+                  {idea.key && <span className="tag t-key">🎵 {idea.key}</span>}
+                </div>
+                {idea.notes && <div className="cnotes">{idea.notes}</div>}
+                <div className="cdate">{fmtDate(idea.ts)}</div>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {editing && <EditModal person={editing} onSave={saveAthlete} onClose={()=>setEditing(null)} />}
-      {viewing && <PersonDetail person={viewing} onClose={()=>setViewing(null)} onEdit={p=>{setViewing(null); setEditing(p);}} />}
-      {deleteConfirm && <ConfirmDelete name={deleteConfirm.name} onConfirm={()=>deleteAthlete(deleteConfirm.id)} onCancel={()=>setDeleteConfirm(null)} />}
+      {editing && (
+        <EditModal
+          card={editing}
+          isNew={isNew}
+          onSave={save}
+          onDelete={del}
+          onClose={() => { setEditing(null); setIsNew(false); }}
+        />
+      )}
+
+      {showIO && (
+        <div className="overlay" onClick={() => setShowIO(false)}>
+          <div className="modal" style={{maxWidth:430}} onClick={e => e.stopPropagation()}>
+            <div className="mhandle"/>
+            <div className="mtr">
+              <div className="mttl">{ioMode === 'export' ? '⬇️ Export Ideas' : '⬆️ Import Ideas'}</div>
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowIO(false)}>✕</button>
+            </div>
+            {ioMode === 'export' ? (
+              <>
+                <p style={{fontSize:'.83rem',color:'var(--muted2)',marginBottom:4,lineHeight:1.5}}>Copy this JSON and save it somewhere safe — a notes app, Google Drive, email yourself.</p>
+                <textarea className="io-ta" readOnly value={ioText} onClick={e => e.target.select()}/>
+                <button className="btn btn-gold" style={{width:'100%'}} onClick={() => { navigator.clipboard.writeText(ioText); setIOMsg({type:'ok',text:'✅ Copied to clipboard!'}); }}>
+                  Copy to Clipboard
+                </button>
+                {ioMsg && <div className={`io-msg ${ioMsg.type}`}>{ioMsg.text}</div>}
+              </>
+            ) : (
+              <>
+                <p style={{fontSize:'.83rem',color:'var(--muted2)',marginBottom:4,lineHeight:1.5}}>Paste your exported JSON below. New ideas will be merged — existing IDs won't be overwritten.</p>
+                <textarea className="io-ta" value={ioText} onChange={e => setIOText(e.target.value)} placeholder="Paste exported JSON here…"/>
+                <button className="btn btn-teal" style={{width:'100%'}} onClick={doImport}>Import Ideas</button>
+                {ioMsg && <div className={`io-msg ${ioMsg.type}`}>{ioMsg.text}</div>}
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="disclaimer">
+        <span className="disc-icon">💾</span>
+        <strong>Always export and save your ideas regularly!</strong><br/>
+        SongPad stores data in your browser's localStorage — it can be lost if you clear your browser data or switch devices.<br/>
+        Use the <strong>⬇️ Export</strong> button to back up your ideas as a JSON file you can reimport anytime.
+      </div>
     </div>
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(React.createElement(App));
+function EditModal({card, isNew, onSave, onDelete, onClose}) {
+  const [form, setForm] = useState({...card});
+  const set = (k, v) => setForm(f => ({...f, [k]: v}));
+
+  const handleSave = () => {
+    if (!form.title.trim() && !form.hook.trim()) {
+      alert('Add at least a title or a hook line before saving.');
+      return;
+    }
+    onSave({...form, ts: isNew ? Date.now() : form.ts});
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('Delete this idea permanently?')) onDelete(form.id);
+  };
+
+  return (
+    <div className="overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="mhandle"/>
+        <div className="mtr">
+          <div className="mttl">{isNew ? '✨ New Idea' : '✏️ Edit Idea'}</div>
+          <button className="btn btn-ghost btn-sm" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="mlbl">Title</div>
+        <input className="minput" placeholder="Working title or song name…" value={form.title} onChange={e => set('title', e.target.value)}/>
+
+        <div className="mlbl">Hook / First Line</div>
+        <input className="minput" placeholder='"That line stuck in your head…"' value={form.hook} onChange={e => set('hook', e.target.value)}/>
+
+        <div className="mrow">
+          <div>
+            <div className="mlbl">Mood</div>
+            <select className="mselect" value={form.mood} onChange={e => set('mood', e.target.value)}>
+              <option value="">— Pick mood —</option>
+              {MOODS.map(m => <option key={m}>{m}</option>)}
+            </select>
+          </div>
+          <div>
+            <div className="mlbl">Genre</div>
+            <select className="mselect" value={form.genre} onChange={e => set('genre', e.target.value)}>
+              <option value="">— Pick genre —</option>
+              {GENRES.map(g => <option key={g}>{g}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div className="mlbl">Key / Tempo Feel</div>
+        <input className="minput" placeholder="e.g. G major · slow burn · 90 BPM feel · minor key" value={form.key} onChange={e => set('key', e.target.value)}/>
+
+        <div className="mlbl">Notes</div>
+        <textarea className="mtarea" placeholder="Verse ideas, chord progression, structure, artist references, anything…" value={form.notes} onChange={e => set('notes', e.target.value)}/>
+
+        <div className={`fav-toggle${form.fav ? ' on' : ''}`} onClick={() => set('fav', !form.fav)}>
+          <span className="fav-star" style={{opacity: form.fav ? 1 : 0.3}}>⭐</span>
+          <span className="fav-lbl">{form.fav ? 'Favorited — skipped by 🎲 Random' : 'Mark as favorite'}</span>
+        </div>
+
+        <div className="mactions">
+          <button className="btn btn-gold" onClick={handleSave}>💾 Save</button>
+          <button className="btn btn-ghost" onClick={onClose}>Cancel</button>
+          {!isNew && (
+            <button className="btn btn-danger mactions-right" onClick={handleDelete}>🗑 Delete</button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>
 </html>
